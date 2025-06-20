@@ -5,7 +5,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const subreddit = 'ani_bm';
 
-// נתיב לשורש מחזיר JSON תקני, לא HTML
 app.get('/', (req, res) => {
   res.json({
     message: 'ברוך הבא ל-Reddit Random Image API!',
@@ -16,7 +15,12 @@ app.get('/', (req, res) => {
 
 app.get('/api/random-image', async (req, res) => {
   try {
-    const response = await fetch(`https://www.reddit.com/r/${subreddit}/hot.json?limit=100`);
+    const response = await fetch(`https://www.reddit.com/r/${subreddit}/hot.json?limit=100`, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) RedditAPIClient/1.0'
+      }
+    });
+
     const data = await response.json();
 
     const postsWithImages = data.data.children.filter(post => {
