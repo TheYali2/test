@@ -5,6 +5,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const subreddit = 'ani_bm';
 
+// נתיב לשורש - מחזיר הודעה פשוטה
+app.get('/', (req, res) => {
+  res.send('ברוך הבא ל-Reddit Random Image API! השתמש ב- /api/random-image כדי לקבל תמונה רנדומלית.');
+});
+
 app.get('/api/random-image', async (req, res) => {
   try {
     const response = await fetch(`https://www.reddit.com/r/${subreddit}/hot.json?limit=100`);
