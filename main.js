@@ -3,7 +3,7 @@ const fetch = require('node-fetch');
 const app = express();
 
 const PORT = process.env.PORT || 3000;
-const DEFAULT_SUBREDDIT = 'pics';
+const DEFAULT_SUBREDDIT = 'ani_bm';
 
 app.get('/', (req, res) => {
   res.json({
