@@ -1,12 +1,12 @@
 {
-  "name": "reddit-random-image-api",
+  "name": "random-country-api",
   "version": "1.0.0",
-  "main": "main.js",
-  "scripts": {
-    "start": "node main.js"
-  },
+  "main": "index.js",
+  "type": "module",
   "dependencies": {
-    "express": "^4.18.2",
-    "node-fetch": "^2.6.7"
+    "express": "^4.18.2"
+  },
+  "scripts": {
+    "start": "node index.js"
   }
 }
