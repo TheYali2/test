@@ -5,9 +5,13 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const subreddit = 'ani_bm';
 
-// נתיב לשורש - מחזיר הודעה פשוטה
+// נתיב לשורש מחזיר JSON תקני, לא HTML
 app.get('/', (req, res) => {
-  res.send('ברוך הבא ל-Reddit Random Image API! השתמש ב- /api/random-image כדי לקבל תמונה רנדומלית.');
+  res.json({
+    message: 'ברוך הבא ל-Reddit Random Image API!',
+    usage: '/api/random-image',
+    description: 'מקבל תמונה רנדומלית מסאב-רדיט ספציפי ללא NSFW.'
+  });
 });
 
 app.get('/api/random-image', async (req, res) => {
