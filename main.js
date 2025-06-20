@@ -3,33 +3,43 @@ const fetch = require('node-fetch');
 const app = express();
 
 const PORT = process.env.PORT || 3000;
-const subreddit = 'ani_bm';
+const DEFAULT_SUBREDDIT = 'pics';
 
 app.get('/', (req, res) => {
   res.json({
     message: 'ברוך הבא ל-Reddit Random Image API!',
-    usage: '/api/random-image',
-    description: 'מקבל תמונה רנדומלית מסאב-רדיט ספציפי ללא NSFW.'
+    usage: '/api/random-image?subreddit=SUBREDDIT_NAME',
+    example: '/api/random-image?subreddit=aww',
+    note: 'סאב-רדיטים NSFW אינם נתמכים.'
   });
 });
 
 app.get('/api/random-image', async (req, res) => {
+  const subreddit = req.query.subreddit || DEFAULT_SUBREDDIT;
+
   try {
     const response = await fetch(`https://www.reddit.com/r/${subreddit}/hot.json?limit=100`, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) RedditAPIClient/1.0'
+        'User-Agent': 'Mozilla/5.0 RedditAPIClient/1.0'
       }
     });
 
+    // נסה להמיר ל־JSON
     const data = await response.json();
 
+    // סינון פוסטים עם תמונה, לא NSFW, לא וידאו
     const postsWithImages = data.data.children.filter(post => {
       const postData = post.data;
-      return postData.post_hint === 'image' && !postData.over_18 && postData.url && !postData.is_video;
+      return (
+        postData.post_hint === 'image' &&
+        !postData.over_18 &&
+        postData.url &&
+        !postData.is_video
+      );
     });
 
     if (postsWithImages.length === 0) {
-      return res.status(404).json({ error: 'No safe images found' });
+      return res.status(404).json({ error: 'לא נמצאו תמונות מתאימות (לא NSFW)' });
     }
 
     const randomPost = postsWithImages[Math.floor(Math.random() * postsWithImages.length)];
@@ -38,14 +48,17 @@ app.get('/api/random-image', async (req, res) => {
       image: randomPost.data.url,
       title: randomPost.data.title,
       subreddit: randomPost.data.subreddit,
-      nsfw: randomPost.over_18
+      nsfw: randomPost.data.over_18
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Failed to fetch images from Reddit' });
+    res.status(500).json({
+      error: 'הבקשה נכשלה. ייתכן שהסאב-רדיט לא קיים או שהוא NSFW.',
+      details: error.message
+    });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`✅ Reddit Image API is running at http://localhost:${PORT}`);
 });
